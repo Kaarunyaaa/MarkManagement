@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 import cors from 'cors';
 
-//import userRoutes from './routes/userRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config(); // Load .env variables
 
@@ -16,7 +16,7 @@ app.use(express.json());  //to read json
 
 
 // Routes
-//app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 // MongoDB Connection
 const PORT = process.env.PORT || 5000;
