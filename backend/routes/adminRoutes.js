@@ -1,9 +1,10 @@
 import express from 'express';
-import {addStudent} from '../controllers/adminController.js';
+import {addStudent,getStudentById,updateStudentById} from '../controllers/adminController.js';
 
 const router = express.Router();
 
 router.post('/add-student', addStudent);
-//router.put('/update-student',updateStudent);
+router.get('/get-student/:id', getStudentById);
+router.put('/update-student/:id', updateStudentById);
 
 export default router;

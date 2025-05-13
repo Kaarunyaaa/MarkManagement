@@ -31,3 +31,46 @@ export const addStudent = async (req, res) => {
 };
 
 
+export const getStudentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.status(200).json(student);
+  } catch (error) {
+    console.error('Error fetching student:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
+
+export const updateStudentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, regno, section, semester, year, password } = req.body;
+
+    const updatedStudent = await Student.findByIdAndUpdate(
+      id,
+      { name, regno, section, semester, year, password },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.status(200).json({ message: 'Student updated', student: updatedStudent });
+  } catch (error) {
+    console.error('Error updating student:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
