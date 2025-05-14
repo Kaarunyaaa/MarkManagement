@@ -1,3 +1,4 @@
+import Semester from "../models/SemesterSchema.js";
 import Student from "../models/Student.js";
 import Mark from "../models/mark.js";
 import bcrypt from "bcrypt";
@@ -184,3 +185,44 @@ export const deleteMark = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const putSubjectsBySemesterNo=async(req,res)=>{
+  try{
+    const { semester,subjects,credits }=await req.body;
+    if (subjects.length != credits.length) {
+      return res.status(400).json({ message: "Subject and mark length doesn't match" });
+    }
+    let SubList=[]
+    for (let i = 0; i < subjects.length; i++) {
+      const newSub = new Semester({
+        semester,
+        subject: subjects[i],
+        credit: credits[i],
+      });
+      await newSub.save();
+      SubList.push(newSub);
+    }
+    res.status(201).json({ message: "Subject added successfully", subject: SubList });
+  }
+  catch (error) {
+    console.error("Error adding subject:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+export const getSubjectsBySemesterNo=async(req,res)=>{
+  try{
+    const { semester } = await req.body;
+    const subjects=await Semester.find({ semester })
+    console.log(subjects)
+    if (!subjects){
+      return res.status(404).json({ message: "Subjects not found" });
+    }
+    res.status(200).json(subjects);
+  } 
+  catch (error) {
+    console.error("Error fetching mark:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
