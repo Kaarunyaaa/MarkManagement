@@ -21,5 +21,7 @@ const markSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+markSchema.index({ student_id: 1, semester: 1, subject: 1 }, { unique: true });
+
 const Mark = mongoose.model('Mark', markSchema);
 export default Mark;
