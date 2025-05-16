@@ -1,35 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import AddStudentForm from './AddStudentForm';
+import StudentList from './StudentList';
+import AddSubjects from './AddSubjects';
+import StudentDetails from './StudentDetails';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
-    <>
+    <Router>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+        <h1>Student Management</h1>
+        <nav style={{ marginBottom: '20px' ,display:'flex',flexDirection:'row', justifyContent:'space-between'}}>
+          <Link to="/add-student" style={{ marginRight: '15px' }}>Add Student</Link>
+          <Link to="/students" style={{ marginRight: '15px' }}>View Students</Link>
+          <Link to="/subjects">Add Subjects</Link>
+        </nav>
 
-export default App
+        <Routes>
+          <Route path="/add-student" element={<AddStudentForm />} />
+          <Route path="/students" element={<StudentList />} />
+          <Route path="/subjects" element={<AddSubjects />} />
+          <Route path="/student-detail" element={<StudentDetails />} />
+          
+        </Routes>
+      </div>
+    </Router>
+  );
+};
+
+export default App;

@@ -1,9 +1,10 @@
 import express from 'express';
-import {addStudent,getStudentById,updateStudentById,deleteStudent,addMark,updateMark,deleteMark,getSemMarksById,getSubjectsBySemesterNo,putSubjectsBySemesterNo} from '../controllers/adminController.js';
+import {addStudent,getAllStudents,getStudentById,updateStudentById,deleteStudent,addMark,updateMark,deleteMark,getSemMarksById,getSubjectsBySemesterNo,putSubjectsBySemesterNo} from '../controllers/adminController.js';
 
 const router = express.Router();
 
 router.post('/add-student', addStudent);
+router.get('/get-all-student/:semester', getAllStudents);
 router.get('/get-student/:id', getStudentById);
 router.put('/update-student/:id', updateStudentById);
 router.delete('/delete-student/:id',deleteStudent);

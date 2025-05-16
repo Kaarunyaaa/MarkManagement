@@ -1,0 +1,62 @@
+/* src/StudentList.css */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #eef2f5;
+  color: #333;
+  padding: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  margin: 0 auto 20px auto;
+  padding: 20px;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+select,
+button {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+select:focus,
+button:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+button {
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  max-width: 500px;
+  margin: auto;
+}
+
+li {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 12px;
+  margin: 10px 0;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
