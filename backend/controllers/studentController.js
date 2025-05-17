@@ -46,7 +46,7 @@ async function getSGPA(student_id,semester){
 
 export const getSgpaById=async(req,res)=>{
   try{
-    const { student_id,semester }=await req.body;
+    const { student_id,semester }=req.query;
     const sgpa=await getSGPA(student_id,semester);
     res.status(200).json({ sgpa: sgpa });
   }
@@ -63,7 +63,7 @@ export const getClassPerformance=async(req,res)=>{
         let aboveAvg=0;
         let belowAvg=0;
         let sgpaArr=[];
-        const{ semester,section }=req.body;
+        const{ semester,section }=req.query;
         const students=await Student.find({semester,section});
         console.log(students);
         
@@ -93,7 +93,7 @@ export const getClassPerformance=async(req,res)=>{
 
 export const getTopPerformers=async(req,res)=>{
     try{
-        const { semester }=req.body;
+        const { semester }=req.query;
         let sgpaArr=[];
         const students=await Student.find({semester});
         for(let i=0;i<students.length;i++){
@@ -117,7 +117,7 @@ export const getSubjectWisePerformance=async(req,res)=>{
         let aboveAvg=0;
         let belowAvg=0;
         let markArr=[];
-        const{ semester,subject }=req.body;
+        const{ semester,subject }=req.query;
         const students=await Student.find({semester});
         console.log(students);
         
@@ -143,3 +143,28 @@ export const getSubjectWisePerformance=async(req,res)=>{
         res.status(500).json({Message:"Server error"});
     }
 }
+
+
+export const getSemMarks = async (req, res) => {
+  try {
+    const { semester } = req.query;
+
+    const student_id=req.student_id;
+    console.log(student_id);
+    console.log(semester);
+    console.log(req.query);
+
+    const marks = await Mark.find({
+      student_id: student_id,
+      semester: semester,
+    });
+
+    if (!marks) {
+      return res.status(404).json({ message: "Mark not found" });
+    }
+    res.status(200).json(marks);
+  } catch (error) {
+    console.error("Error fetching mark:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

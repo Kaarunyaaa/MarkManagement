@@ -65,11 +65,14 @@ export const getStudentById = async (req, res) => {
 export const updateStudentById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, regno, section, semester, year, password } = req.body;
+    const { name, regno, section, semester, year } = req.body;
+
+    console.log("id:",id);
+    console.log(req.body);
 
     const updatedStudent = await Student.findByIdAndUpdate(
       id,
-      { name, regno, section, semester, year, password },
+      { name, regno, section, semester, year },
       { new: true, runValidators: true }
     );
 
@@ -137,7 +140,7 @@ export const addMark = async (req, res) => {
 
 export const getSemMarksById = async (req, res) => {
   try {
-    const { student_id, semester } = req.body;
+    const { student_id, semester } = req.query;
 
     const marks = await Mark.find({
       student_id: student_id,
@@ -184,7 +187,7 @@ export const updateMark = async (req, res) => {
 
 export const deleteMark = async (req, res) => {
   try {
-    const { student_id,semester } = req.body;
+    const { student_id,semester } = req.query;
 
     const deletedMark = await Mark.deleteMany({ student_id,semester });
 
@@ -226,7 +229,7 @@ export const putSubjectsBySemesterNo=async(req,res)=>{
 
 export const getSubjectsBySemesterNo=async(req,res)=>{
   try{
-    const { semester } = await req.body;
+    const { semester } = await req.query;
     const subjects=await Semester.find({ semester })
     console.log(subjects)
     if (!subjects){

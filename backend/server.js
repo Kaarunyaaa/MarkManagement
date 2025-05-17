@@ -6,6 +6,7 @@ import cors from 'cors';
 
 import adminRoutes from './routes/adminRoutes.js';
 import studentRoutes from './routes/studentRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config(); // Load .env variables
 
@@ -19,6 +20,7 @@ app.use(express.json());  //to read json
 // Routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/student', studentRoutes);
+app.use('/api/auth', authRoutes);
 
 // MongoDB Connection
 const PORT = process.env.PORT || 5000;
