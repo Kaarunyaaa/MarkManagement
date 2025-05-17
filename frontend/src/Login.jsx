@@ -1,6 +1,9 @@
 // components/LoginPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "./AuthContext";
+
 
 const Login = () => {
   const [role, setRole] = useState("student"); // or "admin"
@@ -8,6 +11,7 @@ const Login = () => {
   const [user_id, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const auth=useAuth()
 
   const navigate=useNavigate();
   const handleSubmit = async (e) => {
@@ -26,9 +30,7 @@ const Login = () => {
 
 
       const { token, user } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("role", role);
+      auth.login(token, user, role);
       console.log(user,token);
 
       alert("Login successful!");

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import './AddSubjects.css';
+import React, { useState } from "react";
+import axios from "axios";
+import "./AddSubjects.css";
+import { useAuth } from "./AuthContext";
 
 const AddSubjects = () => {
-  const [semester, setSemester] = useState('');
-  const [subjects, setSubjects] = useState([{ subject: '', credit: '' }]);
+  const [semester, setSemester] = useState("");
+  const [subjects, setSubjects] = useState([{ subject: "", credit: "" }]);
+  const auth = useAuth();
 
   const handleSemesterChange = (e) => {
     setSemester(e.target.value);
@@ -17,25 +19,33 @@ const AddSubjects = () => {
   };
 
   const addSubjectField = () => {
-    setSubjects([...subjects, { subject: '', credit: '' }]);
+    setSubjects([...subjects, { subject: "", credit: "" }]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/admin/add-subject', {
-        semester,
-        subjects: subjects.map(s => s.subject),
-        credits: subjects.map(s => s.credit),
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/admin/add-subject",
+        {
+          semester,
+          subjects: subjects.map((s) => s.subject),
+          credits: subjects.map((s) => s.credit),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      );
       console.log(response.data);
-      alert('Subjects added successfully');
+      alert("Subjects added successfully");
       // Reset the form fields
-      setSemester('');
-      setSubjects([{ subject: '', credit: '' }]);
+      setSemester("");
+      setSubjects([{ subject: "", credit: "" }]);
     } catch (error) {
-      console.error('Error adding subjects:', error);
-      alert('Server error');
+      console.error("Error adding subjects:", error);
+      alert("Server error");
     }
   };
 
@@ -43,7 +53,12 @@ const AddSubjects = () => {
     <div className="add-subjects-container">
       <form onSubmit={handleSubmit}>
         <label htmlFor="semester">Select Semester:</label>
-        <select id="semester" value={semester} onChange={handleSemesterChange} required>
+        <select
+          id="semester"
+          value={semester}
+          onChange={handleSemesterChange}
+          required
+        >
           <option value="">Select</option>
           {[...Array(8).keys()].map((num) => (
             <option key={num + 1} value={num + 1}>
@@ -71,7 +86,9 @@ const AddSubjects = () => {
             />
           </div>
         ))}
-        <button type="button" onClick={addSubjectField}>Add More</button>
+        <button type="button" onClick={addSubjectField}>
+          Add More
+        </button>
         <button type="submit">Submit</button>
       </form>
     </div>

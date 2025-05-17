@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./StudentList.css";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 
 const EditMark = () => {
   const [marks, setMarks] = useState({});
@@ -9,7 +10,8 @@ const EditMark = () => {
   const student = location.state?.student;
   const semester = location.state?.semester;
   const oldMarks = location.state?.marks;
-  const navigate= useNavigate();
+  const navigate = useNavigate();
+  const auth = useAuth();
 
   useEffect(() => {
     console.log("oldmark", oldMarks);
@@ -17,7 +19,7 @@ const EditMark = () => {
     for (let i = 0; i < oldMarks.length; i++) {
       t = { ...t, [oldMarks[i].subject]: oldMarks[i].marks };
     }
-    setMarks( t );
+    setMarks(t);
     console.log("t:", t);
   }, []);
 
@@ -38,10 +40,15 @@ const EditMark = () => {
           semester: semester,
           subjects: Object.keys(marks),
           marks: Object.values(marks),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
         }
       );
       console.log(response.data);
-      navigate('/student-detail',{state:{student}});
+      navigate("/student-detail", { state: { student } });
     } catch (error) {
       console.log(error);
     }

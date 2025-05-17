@@ -2,16 +2,24 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./AddStudentForm.css";
+import { useAuth } from "./AuthContext";
 
 const EditStudent = () => {
   const location = useLocation();
   const student = location.state?.student;
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
+  const auth = useAuth();
 
   useEffect(() => {
     console.log(student);
-    setFormData({name:student.name,regno:student.regno,semester:student.semester,section:student.section,year:student.year});
+    setFormData({
+      name: student.name,
+      regno: student.regno,
+      semester: student.semester,
+      section: student.section,
+      year: student.year,
+    });
   }, []);
 
   const handleChange = (e) => {
@@ -24,12 +32,17 @@ const EditStudent = () => {
     try {
       const response = await axios.put(
         `http://localhost:5000/api/admin/update-student/${student._id}`,
-        formData
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
       );
       console.log(response.data);
       alert("Student updated successfully");
       // Clear the form fields
-      navigate('/students');
+      navigate("/students");
     } catch (error) {
       console.error("Error adding student:", error);
       alert("Server error");

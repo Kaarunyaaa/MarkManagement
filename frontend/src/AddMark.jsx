@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./StudentList.css";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 
 const AddMark = () => {
   const [subjects, setSubjects] = useState([]);
@@ -9,6 +10,7 @@ const AddMark = () => {
   const location = useLocation();
   const student = location.state?.student;
   const semester = location.state?.semester;
+  const auth = useAuth();
 
   useEffect(() => {
     async function fetchData() {
@@ -17,6 +19,9 @@ const AddMark = () => {
         {
           params: {
             semester: semester,
+          },
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
           },
         }
       );
@@ -43,6 +48,11 @@ const AddMark = () => {
           semester: semester,
           subjects: Object.keys(marks),
           marks: Object.values(marks),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       console.log(response.data);

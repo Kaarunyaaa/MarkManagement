@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./StudentDetails.css";
+import { useAuth } from "./AuthContext";
 
 const StudentDetails = () => {
   const [semester, setSemester] = useState("");
   const [marks, setMarks] = useState([]);
   const [sgpa, setSgpa] = useState(null); // New state for SGPA
-  const navigate= useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
+  const auth = useAuth();
   const student = location.state?.student;
 
   const fetchSemesterMarks = async (selectedSemester) => {
@@ -19,6 +21,9 @@ const StudentDetails = () => {
           params: {
             student_id: student._id,
             semester: selectedSemester,
+          },
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
           },
         }
       );
@@ -31,6 +36,9 @@ const StudentDetails = () => {
             params: {
               student_id: student._id,
               semester: selectedSemester,
+            },
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
             },
           }
         );
@@ -47,31 +55,35 @@ const StudentDetails = () => {
     fetchSemesterMarks(selectedSemester);
   };
 
-  const handleAddMarkClick =(e)=>{
-    navigate('/addMark', { state: { student,semester } });
-  }
+  const handleAddMarkClick = (e) => {
+    navigate("/addMark", { state: { student, semester } });
+  };
 
-  const handleDeleteClick=async(e)=>{
+  const handleDeleteClick = async (e) => {
     const response = await axios.delete(
-      'http://localhost:5000/api/admin/delete-marks',{
-        params:{
-          student_id:student._id,
-          semester:semester
-        }
+      "http://localhost:5000/api/admin/delete-marks",
+      {
+        params: {
+          student_id: student._id,
+          semester: semester,
+        },
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
       }
     );
     alert("Student Successfully deleted");
     setMarks([]);
     setSgpa(null);
-  }
+  };
 
   if (!student) {
     return <div>No student data available.</div>;
   }
 
-  const handleEditClick=(e)=>{
-    navigate('/editMark',{state:{ student,semester,marks }});
-  }
+  const handleEditClick = (e) => {
+    navigate("/editMark", { state: { student, semester, marks } });
+  };
   return (
     <div className="container">
       <h2>Welcome {student.name}</h2>
@@ -92,7 +104,15 @@ const StudentDetails = () => {
       </select>
 
       {marks.length > 0 ? (
-        <div className="marks-section" style={{display:'flex',flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+        <div
+          className="marks-section"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <h3>Marks for Semester {semester}</h3>
           <table className="marks-table">
             <thead>
@@ -116,9 +136,18 @@ const StudentDetails = () => {
         </div>
       ) : (
         semester && (
-          <div style={{ display:'flex',flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <p className="no-marks">No marks found for Semester {semester}.</p>
-            <button style={{ width:'40%' }} onClick={ handleAddMarkClick }>Add Marks</button>
+            <button style={{ width: "40%" }} onClick={handleAddMarkClick}>
+              Add Marks
+            </button>
           </div>
         )
       )}
