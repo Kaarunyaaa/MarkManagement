@@ -91,7 +91,7 @@ const EditStudent = () => {
         onChange={handleChange}
         required
       />
-      <button type="submit">Add Student</button>
+      <button type="submit">Save</button>
     </form>
   );
 };

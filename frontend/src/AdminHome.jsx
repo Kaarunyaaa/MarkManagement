@@ -1,7 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { AuthProvider, useAuth } from "./AuthContext";
 
 const AdminHome = () => {
+  const auth=useAuth();
+  const handleLogout=(e)=>{
+    auth.logout();
+  }
+
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
       <h1 style={{ marginBottom: "30px" }}>Student Management</h1>
@@ -25,6 +31,7 @@ const AdminHome = () => {
           Add Subjects
         </Link>
       </nav>
+      <button onClick={handleLogout}>Logout</button>
     </div>
   );
 };

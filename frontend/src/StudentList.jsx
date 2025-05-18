@@ -27,7 +27,7 @@ const StudentList = () => {
     }
   }
 
-  const handleSubmit = async (e) => {
+  const handleChange = async (e) => {
     e.preventDefault();
     try {
       console.log("s", e.target.value);
@@ -74,7 +74,7 @@ const StudentList = () => {
         value={semester}
         onChange={(e) => {
           console.log(e), setSemester(e.target.value);
-          handleSubmit(e);
+          handleChange(e);
         }}
         required
       >

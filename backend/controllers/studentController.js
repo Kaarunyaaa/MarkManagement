@@ -57,8 +57,6 @@ export const getSgpaById=async(req,res)=>{
 }
 
 
-
-
 export const getSemMarks = async (req, res) => {
   try {
     const { semester } = req.query;
