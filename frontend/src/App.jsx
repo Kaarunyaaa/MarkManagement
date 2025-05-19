@@ -10,6 +10,7 @@ import EditStudent from "./EditStudent";
 import Login from "./Login";
 import AdminHome from "./AdminHome";
 import StudentHome from "./StudentHome";
+import Report from "./Report";
 import { useAuth } from "./AuthContext";
 
 const App = () => {
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/addMark" element={<AddMark />} />
           <Route path="/editMark" element={<EditMark />} />
           <Route path="/editStudent" element={<EditStudent />} />
+          <Route path="/reports" element={<Report/>} />
         </>
       )}
     </Routes>

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
 const StudentList = () => {
-  const [semester, setSemester] = useState("");
+  const [semester, setSemester] = useState("8");
   const [students, setStudents] = useState([]);
   const navigate = useNavigate();
   const auth = useAuth();
@@ -26,6 +26,9 @@ const StudentList = () => {
       console.log(error);
     }
   }
+  useEffect(()=>{
+    fetchStudents(semester);
+  },[]);
 
   const handleChange = async (e) => {
     e.preventDefault();

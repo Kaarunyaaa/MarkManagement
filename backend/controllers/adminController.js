@@ -32,19 +32,18 @@ export const addStudent = async (req, res) => {
   }
 };
 
-export const getAllStudents=async(req,res)=>{
-  try{
-    const {semester}=req.params;
-    const students= await Student.find({semester});
+export const getAllStudents = async (req, res) => {
+  try {
+    const { semester } = req.params;
+    const students = await Student.find({ semester });
     if (!students) {
       return res.status(404).json({ message: "Students not found" });
     }
     res.status(200).json({ message: "Student updated", student: students });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
   }
-  catch(error){
-    res.status(500).json({message:"Server Error"});
-  }
-}
+};
 
 export const getStudentById = async (req, res) => {
   try {
@@ -67,7 +66,7 @@ export const updateStudentById = async (req, res) => {
     const { id } = req.params;
     const { name, regno, section, semester, year } = req.body;
 
-    console.log("id:",id);
+    console.log("id:", id);
     console.log(req.body);
 
     const updatedStudent = await Student.findByIdAndUpdate(
@@ -160,17 +159,17 @@ export const getSemMarksById = async (req, res) => {
 
 export const updateMark = async (req, res) => {
   try {
-    const { student_id, semester, subjects, marks } = req.body;  
+    const { student_id, semester, subjects, marks } = req.body;
     if (subjects.length != marks.length) {
       return res
         .status(400)
         .json({ message: "Subject and mark length doesn't match" });
     }
-    let updatedList=[]
+    let updatedList = [];
     for (let i = 0; i < subjects.length; i++) {
       const updatedMark = await Mark.findOneAndUpdate(
-        {student_id,semester,subject: subjects[i]},
-        { semester, subject: subjects[i], marks: marks[i] },   
+        { student_id, semester, subject: subjects[i] },
+        { semester, subject: subjects[i], marks: marks[i] },
         { new: true, runValidators: true }
       );
       if (!updatedMark) {
@@ -188,10 +187,9 @@ export const updateMark = async (req, res) => {
 
 export const deleteMark = async (req, res) => {
   try {
-    const { student_id,semester } = req.query;
+    const { student_id, semester } = req.query;
 
-    const deletedMark = await Mark.deleteMany({ student_id,semester });
-
+    const deletedMark = await Mark.deleteMany({ student_id, semester });
 
     if (!deletedMark) {
       return res.status(404).json({ message: "Mark not found" });
@@ -204,13 +202,15 @@ export const deleteMark = async (req, res) => {
   }
 };
 
-export const putSubjectsBySemesterNo=async(req,res)=>{
-  try{
-    const { semester,subjects,credits }=await req.body;
+export const putSubjectsBySemesterNo = async (req, res) => {
+  try {
+    const { semester, subjects, credits } = await req.body;
     if (subjects.length != credits.length) {
-      return res.status(400).json({ message: "Subject and mark length doesn't match" });
+      return res
+        .status(400)
+        .json({ message: "Subject and mark length doesn't match" });
     }
-    let SubList=[]
+    let SubList = [];
     for (let i = 0; i < subjects.length; i++) {
       const newSub = new Semester({
         semester,
@@ -220,116 +220,180 @@ export const putSubjectsBySemesterNo=async(req,res)=>{
       await newSub.save();
       SubList.push(newSub);
     }
-    res.status(201).json({ message: "Subject added successfully", subject: SubList });
-  }
-  catch (error) {
+    res
+      .status(201)
+      .json({ message: "Subject added successfully", subject: SubList });
+  } catch (error) {
     console.error("Error adding subject:", error);
     res.status(500).json({ message: "Server error" });
   }
-}
+};
 
-export const getSubjectsBySemesterNo=async(req,res)=>{
-  try{
+export const getSubjectsBySemesterNo = async (req, res) => {
+  try {
     const { semester } = await req.query;
-    const subjects=await Semester.find({ semester })
-    console.log(subjects)
-    if (!subjects){
+    const subjects = await Semester.find({ semester });
+    console.log(subjects);
+    if (!subjects) {
       return res.status(404).json({ message: "Subjects not found" });
     }
     res.status(200).json(subjects);
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Error fetching mark:", error);
     res.status(500).json({ message: "Server error" });
   }
+};
+
+export const getSemesterPerformance = async (req, res) => {
+  try {
+    let sgpaSum = 0;
+    let total = 0;
+    let aboveAvg = 0;
+    let belowAvg = 0;
+    let sgpaArr = [];
+    const { semester } = req.query;
+    const students = await Student.find({ semester });
+    console.log(students);
+
+    for (let i = 0; i < students.length; i++) {
+      const marks=await Mark.find({student_id:students[i]._id,semester});
+      console.log("marks:",marks);
+      if(marks.length==0){
+        continue;
+      }
+      const sgpa = await getSGPA(students[i]._id, semester);
+      sgpaSum += sgpa;
+      total += 1;
+      sgpaArr.push(sgpa);
+    }
+    const semesterAverage = sgpaSum / total;
+    for (let i = 0; i < sgpaArr.length; i++) {
+      if (sgpaArr[i] > semesterAverage) {
+        aboveAvg += 1;
+      } else {
+        belowAvg += 1;
+      }
+    }
+    console.log("AboveAverage");
+    return res.json({
+      semesterAverage: semesterAverage,
+      AboveAverageCount: aboveAvg,
+      BelowAverageCount: belowAvg,
+    });
+  } catch (error) {
+    res.status(500).json({ Message: "Server error" });
+  }
+};
+
+function getGradePoint(mark) {
+  if (mark >= 90) {
+    return 10;
+  } else if (mark >= 85) {
+    return 9;
+  } else if (mark >= 75) {
+    return 8;
+  } else if (mark >= 65) {
+    return 7;
+  } else if (mark >= 55) {
+    return 6;
+  } else if (mark >= 50) {
+    return 5;
+  } else {
+    return 2;
+  }
 }
 
-
-export const getClassPerformance=async(req,res)=>{
-    try{
-        let sgpaSum=0;
-        let total=0;
-        let aboveAvg=0;
-        let belowAvg=0;
-        let sgpaArr=[];
-        const{ semester,section }=req.query;
-        const students=await Student.find({semester,section});
-        console.log(students);
-        
-        for(let i=0;i<students.length;i++){
-            const sgpa=await getSGPA(students[i]._id,semester);
-            sgpaSum+=sgpa
-            total+=1;
-            sgpaArr.push(sgpa);
-        }
-        const classAverage=(sgpaSum/total);
-        for(let i=0;i<sgpaArr.length;i++){
-            if(sgpaArr[i]>classAverage){
-                aboveAvg+=1
-            }
-            else{
-                belowAvg+=1
-            }
-        }
-        console.log("AboveAverage")
-        return res.json({classAverage: classAverage,AboveAverageCount:aboveAvg,BelowAverageCount:belowAvg});
-    }
-    catch(error){
-        res.status(500).json({Message:"Server error"});
-    }
+async function getSGPA(student_id, semester) {
+  const subjects = await Semester.find({ semester });
+  console.log(subjects);
+  var sgpa = 0;
+  var totalCredits = 0;
+  for (let i = 0; i < subjects.length; i++) {
+    const mark = await Mark.find({
+      student_id,
+      semester,
+      subject: subjects[i].subject,
+    });
+    console.log(mark);
+    console.log(mark[0].marks);
+    const grade = getGradePoint(mark[0].marks);
+    console.log(grade);
+    sgpa += grade * subjects[i].credit;
+    totalCredits += subjects[i].credit;
+  }
+  return sgpa / totalCredits;
 }
 
+export const getTopPerformers = async (req, res) => {
+  try {
+    const { semester } = req.query;
+    let sgpaArr = [];
+    const students = await Student.find({ semester });
 
-export const getTopPerformers=async(req,res)=>{
-    try{
-        const { semester }=req.query;
-        let sgpaArr=[];
-        const students=await Student.find({semester});
-        for(let i=0;i<students.length;i++){
-            const sgpa=await getSGPA(students[i]._id,semester);
-            sgpaArr.push({student:students[i],sgpa:sgpa});
-        }
-        sgpaArr.sort((a, b) => b.sgpa - a.sgpa); // Sort by sgpa descending
-        res.status(200).json({getTopPerformers:sgpaArr});
-        
+    for (let i = 0; i < students.length; i++) {
+      const marks=await Mark.find({student_id:students[i]._id,semester});
+      console.log("marks:",marks);
+      if(marks.length==0){
+        continue;
+      }
+      const sgpa = await getSGPA(students[i]._id, semester);
+      sgpaArr.push({ student: students[i], sgpa: sgpa });
     }
-    catch(error){
-        res.status(500).json({message:"Server Error"});
-    }
-    
-}
 
-export const getSubjectWisePerformance=async(req,res)=>{
-    try{
-        let markSum=0;
-        let total=0;
-        let aboveAvg=0;
-        let belowAvg=0;
-        let markArr=[];
-        const{ semester,subject }=req.query;
-        const students=await Student.find({semester});
-        console.log(students);
-        
-        for(let i=0;i<students.length;i++){
-            const mark=await Mark.find({semester,subject,student_id:students[i]._id});
-            console.log(mark);
-            markSum+=mark[0].marks;
-            total+=1;
-            markArr.push(mark[0].marks);
-        }
-        const classAverage=(markSum/total);
-        for(let i=0;i<markArr.length;i++){
-            if(markArr[i]>classAverage){
-                aboveAvg+=1
-            }
-            else{
-                belowAvg+=1
-            }
-        }
-        return res.json({SubjectAverage: classAverage,AboveAverageCount:aboveAvg,BelowAverageCount:belowAvg});
-    }
-    catch(error){
-        res.status(500).json({Message:"Server error"});
-    }
-}
+    // Sort by SGPA in descending order
+    sgpaArr.sort((a, b) => b.sgpa - a.sgpa);
 
+    // Limit to top 5 performers
+    const top5 = sgpaArr.slice(0, 5);
+
+    res.status(200).json({ getTopPerformers: top5 });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+export const getSubjectWisePerformance = async (req, res) => {
+  try {
+    let markSum = 0;
+    let total = 0;
+    let aboveAvg = 0;
+    let belowAvg = 0;
+    let markArr = [];
+    const { semester, subject } = req.query;
+    const students = await Student.find({ semester });
+    console.log(students);
+
+    for (let i = 0; i < students.length; i++) {
+      const mark = await Mark.find({
+        semester,
+        subject,
+        student_id: students[i]._id,
+      });
+      console.log("length:",mark.length);
+      if(mark.length===0){
+        console.log("inside if");
+        continue;
+      }
+      console.log(mark);
+      markSum += mark[0].marks;
+      total += 1;
+      markArr.push(mark[0].marks);
+    }
+    const classAverage = markSum / total;
+    for (let i = 0; i < markArr.length; i++) {
+      if (markArr[i] >= classAverage) {
+        aboveAvg += 1;
+      } else {
+        belowAvg += 1;
+      }
+    }
+    return res.json({
+      SubjectAverage: classAverage,
+      AboveAverageCount: aboveAvg,
+      BelowAverageCount: belowAvg,
+    });
+  } catch (error) {
+    res.status(500).json({ Message: "Server error" });
+  }
+};

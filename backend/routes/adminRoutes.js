@@ -1,5 +1,5 @@
 import express from 'express';
-import {getSubjectWisePerformance,getTopPerformers,getClassPerformance,addStudent,getAllStudents,getStudentById,updateStudentById,deleteStudent,addMark,updateMark,deleteMark,getSemMarksById,getSubjectsBySemesterNo,putSubjectsBySemesterNo} from '../controllers/adminController.js';
+import {getSubjectWisePerformance,getTopPerformers,getSemesterPerformance,addStudent,getAllStudents,getStudentById,updateStudentById,deleteStudent,addMark,updateMark,deleteMark,getSemMarksById,getSubjectsBySemesterNo,putSubjectsBySemesterNo} from '../controllers/adminController.js';
 import { verifyAdminAccess } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -18,7 +18,7 @@ router.delete('/delete-marks',verifyAdminAccess,deleteMark);
 router.get('/get-subject-bySemNo',verifyAdminAccess,getSubjectsBySemesterNo);
 router.post('/add-subject',verifyAdminAccess,putSubjectsBySemesterNo);
 
-router.get('/get-performance',verifyAdminAccess,getClassPerformance);
+router.get('/get-performance',verifyAdminAccess,getSemesterPerformance);
 router.get('/getTop-Performers',verifyAdminAccess,getTopPerformers);
 router.get('/getSubjectWisePerformance',verifyAdminAccess,getSubjectWisePerformance);
 

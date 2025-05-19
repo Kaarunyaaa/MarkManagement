@@ -30,6 +30,9 @@ const AdminHome = () => {
         <Link to="/subjects" style={{ textDecoration: "none", fontWeight: "bold" }}>
           Add Subjects
         </Link>
+        <Link to="/reports" style={{ textDecoration: "none", fontWeight: "bold" }}>
+          View Report
+        </Link>
       </nav>
       <button onClick={handleLogout}>Logout</button>
     </div>

@@ -7,6 +7,7 @@ import { useAuth } from "./AuthContext";
 const AddMark = () => {
   const [subjects, setSubjects] = useState([]);
   const [marks, setMarks] = useState({});
+  const navigate=useNavigate();
   const location = useLocation();
   const student = location.state?.student;
   const semester = location.state?.semester;
@@ -51,11 +52,12 @@ const AddMark = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${auth.token}`,
           },
         }
       );
       console.log(response.data);
+      navigate('/students');
     } catch (error) {
       console.log(error);
     }

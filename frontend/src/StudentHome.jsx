@@ -40,10 +40,14 @@ const StudentHome = () => {
       console.log(error);
     }
   };
+  const handleLogout = (e) => {
+    auth.logout();
+  };
 
   return (
     <div>
       <h3>Hello {auth.user.name}</h3>
+      <button onClick={handleLogout}>Logout</button>
 
       <label htmlFor="semester">Select Semester:</label>
       <select
