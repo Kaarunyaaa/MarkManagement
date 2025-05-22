@@ -1,0 +1,70 @@
+import request from "supertest";
+import express from "express";
+import mongoose from "mongoose";
+import { connect, closeDatabase, clearDatabase } from "./setup.js";
+import { addStudent } from "../controllers/adminController.js";
+import Student from "../models/Student.js";
+
+const app = express();
+app.use(express.json());
+app.post("/add-student", addStudent);
+
+beforeAll(async () => await connect());
+afterEach(async () => await clearDatabase());
+afterAll(async () => await closeDatabase());
+
+describe("POST /add-student", () => {
+  it("should add a new student", async () => {
+    const res = await request(app).post("/add-student").send({
+      name: "Alice",
+      regno: "1001",
+      section: "A",
+      semester: "2",
+      year: "2025",
+      password: "test1234"
+    });
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toHaveProperty("student");
+    expect(res.body.student.name).toBe("Alice");
+  });
+
+  it("should not allow duplicate regno", async () => {
+    await Student.create({
+      name: "Alice",
+      regno: "1001",
+      section: "A",
+      semester: "2",
+      year: "2025",
+      password: "hashedpass"
+    });
+
+    const res = await request(app).post("/add-student").send({
+      name: "Alice",
+      regno: "1001",
+      section: "A",
+      semester: "2",
+      year: "2025",
+      password: "test1234"
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Student already exists");
+  });
+
+  it("should not add a student with invalid", async () => {
+    const res = await request(app).post("/add-student").send({
+      name: "Alice",
+      regno: "1001",
+      section: "A",
+      semester: "H",
+      year: "2025",
+      password: "test1234"
+    });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.message).toBe("Server error");
+  });
+});
+
+

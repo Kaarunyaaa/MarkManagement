@@ -1,28 +1,9 @@
-import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import app from './app.js';
 
-import cors from 'cors';
+dotenv.config();
 
-import adminRoutes from './routes/adminRoutes.js';
-import studentRoutes from './routes/studentRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-
-dotenv.config(); // Load .env variables
-
-const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json());  //to read json
-
-
-// Routes
-app.use('/api/admin', adminRoutes);
-app.use('/api/student', studentRoutes);
-app.use('/api/auth', authRoutes);
-
-// MongoDB Connection
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -32,6 +13,7 @@ mongoose
     console.log('✅ MongoDB Connected');
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`Swagger docs at http://localhost:${PORT}/api-docs`);
     });
   })
   .catch((err) => {
